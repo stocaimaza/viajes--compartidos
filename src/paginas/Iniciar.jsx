@@ -1,57 +1,50 @@
-import { useState } from "react"; 
+import { useState } from "react";
 import { usarAutenticacion } from "../contexto/ContextoAutenticacion";
 import { useNavigate } from "react-router-dom";
 
 const Iniciar = () => {
-    const {iniciarSesion, iniciarSesionConGoogle} = usarAutenticacion(); 
-    const [correo, setCorreo] = useState(''); 
-    const [contrasena, setContrasena] = useState(''); 
-    const navegar = useNavigate(); 
+  const { iniciarSesion } = usarAutenticacion();
+  const navigate = useNavigate();
 
-    //Funciones auxiliares: 
+  const [correo, setCorreo] = useState("");
+  const [contrasena, setContrasena] = useState("");
+  const [error, setError] = useState(null);
 
-    const manejarInicio = async () => {
-        e.preventDefault(); 
-        try {
-            await iniciarSesion(correo, contrasena); 
-            //Vamos a navegar a otra pagina: 
-            navegar("/panel"); 
-        } catch (error) {
-            console.log(error, "vamos a re morir"); 
-        }
+  const manejarInicio = async (e) => {
+    e.preventDefault();
+    try {
+      await iniciarSesion(correo, contrasena);
+      navigate("/panel"); // redirige si se inicia sesión correctamente
+    } catch (err) {
+      console.error(err);
+      setError("Correo o contraseña incorrectos.");
     }
-
-    const manejarGoogle = async () => {
-        try {
-            await iniciarSesionConGoogle(); 
-            navegar("/panel"); 
-        } catch (error) {
-            alert("todo es tragedia y dolor"); 
-        }
-    }
+  };
 
   return (
     <div className="contenedor">
-        <form className="formulario" onSubmit={ manejarInicio }>
-            <input 
-                type="email" 
-                placeholder="Correo"
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
-                required
-            />
-             <input 
-                type="password" 
-                placeholder="Contraseña"
-                value={contrasena}
-                onChange={(e) => setContrasena(e.target.value)}
-                required
-            />
-            <button type="submit"> Ingresar </button>
-        </form>
-        <button onClick={ manejarGoogle }> Ingresar con Google </button>
+      <h2>Iniciar Sesión</h2>
+      <form onSubmit={manejarInicio}>
+        <input
+          type="email"
+          placeholder="Correo electrónico"
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={contrasena}
+          onChange={(e) => setContrasena(e.target.value)}
+          required
+        />
+        <button type="submit">Ingresar</button>
+      </form>
+      {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
     </div>
-  )
-}
+  );
+};
 
-export default Iniciar
+export default Iniciar;
+
